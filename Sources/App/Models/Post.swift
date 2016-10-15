@@ -36,7 +36,10 @@ extension Post {
 
 extension Post: Preparation {
     static func prepare(_ database: Database) throws {
-        //
+        try database.create("posts") { (creator) in
+            creator.id()
+            creator.string("content")
+        }
     }
 
     static func revert(_ database: Database) throws {
