@@ -6,19 +6,16 @@
 //
 //
 
+import Vapor
 import HTTP
 import Turnstile
 import JSON
 
-/**
- 
- */
-final class UsersController {
+public final class UsersController {
     
-    /**
-     
-     */
-    func login(request: Request) throws -> ResponseRepresentable {
+    public init() {}
+    
+    public func login(request: Request) throws -> ResponseRepresentable {
         guard
             let username = request.formURLEncoded?["username"]?.string,
             let password = request.formURLEncoded?["password"]?.string
@@ -47,10 +44,7 @@ final class UsersController {
             ])
     }
     
-    /**
-     
-     */
-    func register(request: Request) throws -> ResponseRepresentable {
+    public func register(request: Request) throws -> ResponseRepresentable {
         guard
             let username = request.formURLEncoded?["username"]?.string,
             let password = request.formURLEncoded?["password"]?.string
@@ -69,9 +63,9 @@ final class UsersController {
         }
         do {
             try request.auth.login(credentials, persist: false)
-        } catch let e {
+        } catch {
             return try JSON(node: [
-                "err": e.localizedDescription,
+                "err": IncorrectCredentialsError().description,
                 "success": false
                 ])
         }

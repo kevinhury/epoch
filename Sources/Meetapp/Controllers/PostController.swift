@@ -1,7 +1,10 @@
 import Vapor
 import HTTP
 
-final class PostController: ResourceRepresentable {
+public final class PostController: ResourceRepresentable {
+    
+    public init() {}
+    
     func index(request: Request) throws -> ResponseRepresentable {
         return try Post.all().makeNode().converted(to: JSON.self)
     }
@@ -39,7 +42,7 @@ final class PostController: ResourceRepresentable {
         return try create(request: request)
     }
 
-    func makeResource() -> Resource<Post> {
+    public func makeResource() -> Resource<Post> {
         return Resource(
             index: index,
             store: create,
