@@ -28,7 +28,7 @@ drop.get { req in
 
 // Authentication handlers
 drop.group("auth") { (group) in
-    let usersController = UsersController()
+    let usersController: AuthenticationController = UsersController()
     group.post("registration", handler: usersController.register)
     group.post("login", handler: usersController.login)
 }

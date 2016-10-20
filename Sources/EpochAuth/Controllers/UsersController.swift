@@ -11,7 +11,13 @@ import HTTP
 import Turnstile
 import JSON
 
-public final class UsersController {
+public protocol AuthenticationController {
+    func login(request: Request) throws -> ResponseRepresentable
+    func register(request: Request) throws -> ResponseRepresentable
+}
+
+
+public final class UsersController: AuthenticationController {
     
     public init() {}
     
