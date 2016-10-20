@@ -1,3 +1,11 @@
+//
+//  Test.swift
+//  Epoch
+//
+//  Created by Kevin Hury on 20/10/2016.
+//
+//
+
 import XCTest
 @testable import Meetapp
 
