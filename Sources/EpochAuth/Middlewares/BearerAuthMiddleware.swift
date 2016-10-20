@@ -9,8 +9,10 @@
 import Turnstile
 import HTTP
 
-class BearerAuthMiddleware: Middleware {
-    func respond(to request: Request, chainingTo next: Responder) throws -> Response {
+public class BearerAuthMiddleware: Middleware {
+    public init() {}
+    
+    public func respond(to request: Request, chainingTo next: Responder) throws -> Response {
         if let accessToken = request.auth.header?.bearer {
             try? request.auth.login(accessToken, persist: false)
         }

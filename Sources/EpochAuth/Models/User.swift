@@ -13,11 +13,11 @@ import TurnstileWeb
 import TurnstileCrypto
 
 
-final class User: Auth.User {
-    var exists: Bool = false
+public final class User: Auth.User {
+    public var exists: Bool = false
     
     // Database fields
-    var id: Node?
+    public var id: Node?
     var username: String
     var password = ""
     var facebookId = ""
@@ -25,7 +25,7 @@ final class User: Auth.User {
     var apiKeyId = URandom().secureToken
     var apiKeySecret = URandom().secureToken
     
-    init(node: Node, in context: Context) throws {
+    public init(node: Node, in context: Context) throws {
         self.id = node["id"]
         self.username = try node.extract("username")
         self.password = try node.extract("password")
@@ -36,7 +36,7 @@ final class User: Auth.User {
     }
     
     
-    func makeNode(context: Context) throws -> Node {
+    public func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
             "username": username,
@@ -48,7 +48,7 @@ final class User: Auth.User {
             ])
     }
     
-    static func authenticate(credentials: Credentials) throws -> Auth.User {
+    public static func authenticate(credentials: Credentials) throws -> Auth.User {
         var user: User?
         
         switch credentials {
@@ -107,8 +107,7 @@ final class User: Auth.User {
             /**
              Authenticates via Access Token.
              */
-        case let credentials as AccessToken:
-            drop.log.warning("using access token: \(credentials)")
+        case _ as AccessToken:
             throw UnsupportedCredentialsError()
             
         default:
@@ -122,7 +121,7 @@ final class User: Auth.User {
         }
     }
     
-    static func register(credentials: Credentials) throws -> Auth.User {
+    public static func register(credentials: Credentials) throws -> Auth.User {
         var newUser: User
         
         switch credentials {
@@ -163,7 +162,7 @@ final class User: Auth.User {
 }
 
 extension User: Preparation {
-    static func prepare(_ database: Database) throws {
+    public static func prepare(_ database: Database) throws {
         try database.create("users") { (creator: Schema.Creator) in
             creator.id()
             creator.string("username")
@@ -174,5 +173,5 @@ extension User: Preparation {
             creator.string("api_key_secret")
         }
     }
-    static func revert(_ database: Database) throws {}
+    public static func revert(_ database: Database) throws {}
 }
