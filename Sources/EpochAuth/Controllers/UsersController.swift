@@ -18,9 +18,17 @@ public protocol AuthenticationController {
 
 
 public final class UsersController: AuthenticationController {
-    
     public init() {}
     
+    /**
+     * @api {POST} /login/
+     * 
+     * @apiParam {String} username User's unique identifier.
+     * @apiParam {String} password User's password.
+     *
+     * @apiSuccess {String} api_id Hashed API username
+     * @apiSuccess {String} api_secret Hashed API password
+     */
     public func login(request: Request) throws -> ResponseRepresentable {
         guard
             let username = request.formURLEncoded?["username"]?.string,
@@ -50,6 +58,15 @@ public final class UsersController: AuthenticationController {
             ])
     }
     
+    
+    /**
+     * @api {POST} /registration/
+     *
+     * @apiParam {String} username User's unique identifier.
+     * @apiParam {String} password User's password.
+     *
+     * @apiSuccess {String} success Flag indicating the status of registration.
+     */
     public func register(request: Request) throws -> ResponseRepresentable {
         guard
             let username = request.formURLEncoded?["username"]?.string,
