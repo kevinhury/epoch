@@ -18,6 +18,7 @@ try drop.addProvider(VaporMySQL.Provider.self)
 drop.addConfigurable(middleware: AuthMiddleware(user: User.self), name: "auth")
 drop.preparations.append(User.self)
 drop.preparations.append(Post.self)
+drop.preparations.append(Event.self)
 
 
 drop.get { req in
@@ -38,6 +39,6 @@ private let protect = ProtectMiddleware(
     error: Abort.custom(status: .unauthorized, message: "Invalid credentials.")
 )
 drop.grouped(baseAuth, protect).resource("posts", PostController())
-
+drop.grouped(baseAuth, protect).resource("events", EventsController())
 
 drop.run()

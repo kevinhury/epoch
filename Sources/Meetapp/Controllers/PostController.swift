@@ -55,7 +55,7 @@ public final class PostController: ResourceRepresentable {
     }
 }
 
-extension Request {
+fileprivate extension Request {
     func post() throws -> Post {
         guard let json = json else { throw Abort.badRequest }
         return try Post(node: json)
