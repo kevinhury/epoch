@@ -11,6 +11,8 @@ import Fluent
 import EpochAuth
 
 public final class Event: Model {
+    public var exists: Bool = false
+    
     // Database fields
     public var id: Node?
     var name: String

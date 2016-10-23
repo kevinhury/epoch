@@ -34,7 +34,11 @@ public final class EventsController: ResourceRepresentable {
 
 fileprivate extension Request {
     func event() throws -> Event {
-        guard let json = json else { throw Abort.badRequest }
+        guard var json = json else { throw Abort.badRequest }
+        
+        let userId = try auth.user().uniqueID
+        json["owner_id"] = try JSON(node: Node(userId))
+        
         return try Event(node: json)
     }
 }
