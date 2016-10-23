@@ -29,8 +29,8 @@ public final class Event: Model {
         self.name = try node.extract("name")
         self.description = try node.extract("description")
         self.location = try node.extract("location")
-        self.photoURL = try node.extract("photoURL")
-        self.rsvpDeadline = try node.extract("rsvpDeadline")
+        self.photoURL = try node.extract("photo_url")
+        self.rsvpDeadline = try node.extract("rsvp_deadline")
     }
     
     public func makeNode(context: Context) throws -> Node {
@@ -40,8 +40,8 @@ public final class Event: Model {
             "name": name,
             "description": description,
             "location": location,
-            "photoURL": photoURL,
-            "rsvpDeadline": rsvpDeadline
+            "photo_url": photoURL,
+            "rsvp_deadline": rsvpDeadline
         ])
     }
     
@@ -56,8 +56,8 @@ extension Event: Preparation {
             creator.string("name")
             creator.string("description")
             creator.string("location")
-            creator.string("photoURL")
-            creator.int("rsvpDeadline")
+            creator.string("photo_url")
+            creator.int("rsvp_deadline")
         }
     }
     

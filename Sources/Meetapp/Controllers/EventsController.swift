@@ -41,4 +41,19 @@ fileprivate extension Request {
         
         return try Event(node: json)
     }
+    
+    func invitees(eventId: Int) throws -> [EventInvite] {
+        guard let json = json else { throw Abort.badRequest }
+        
+        let invitees: [String] = try json.extract("invitees")
+        return try invitees.map { userId in
+            let node = try JSON(node: [
+                "state_id": 0,
+                "user_id": userId,
+                "event_id": eventId
+            ])
+            return try EventInvite(node: node)
+        }
+        
+    }
 }
