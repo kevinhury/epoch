@@ -32,12 +32,12 @@ public final class EventsController: ResourceRepresentable {
     }
 }
 
-fileprivate extension Request {
+extension Request {
     func event() throws -> Event {
         guard var json = json else { throw Abort.badRequest }
         
         let userId = try auth.user().uniqueID
-        json["owner_id"] = try JSON(node: Node(userId))
+        json["user_id"] = try JSON(node: Node(userId))
         
         return try Event(node: json)
     }
@@ -54,6 +54,5 @@ fileprivate extension Request {
             ])
             return try EventInvite(node: node)
         }
-        
     }
 }

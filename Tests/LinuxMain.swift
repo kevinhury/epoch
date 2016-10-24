@@ -12,5 +12,6 @@ import XCTest
 
 XCTMain([  
     testCase(RequestAuthTests.allTests),
-    testCase(PostTest.allTests),
+    testCase(EventsControllerTests.allTests),
+    testCase(EventTests.allTests),
 ])

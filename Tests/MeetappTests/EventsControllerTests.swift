@@ -16,7 +16,7 @@ import HTTP
 class EventsControllerTests: XCTestCase {
     static var allTests: [(String, (EventsControllerTests) -> () throws -> Void)] {
         return [
-            ("testExample", testRequestInviteesParser),
+            ("testRequestInviteesParser", testRequestInviteesParser),
         ]
     }
     
@@ -30,17 +30,27 @@ class EventsControllerTests: XCTestCase {
         droplet.database = database
     }
     
-    func testRequestInviteesParser() {
-        let mock = JSON(node: [
-            
+    func testRequestInviteesParser() throws {
+        let mock = try JSON(node: [
+            "invitees": Node(node: ["kevin", "gabi"])
         ])
         
-        let request = Request(method: .get, uri: "create")
+        let request = try Request(method: .get, uri: "*")
+        request.json = mock
         
-        droplet.post("create") { request in
-            
+        droplet.get("*") { request in
+            let invitees = try request.invitees(eventId: 2)
+            XCTAssertEqual(invitees.count, 2)
+            invitees.forEach { invite in
+                XCTAssertEqual(invite.eventId, 2)
+                XCTAssertNotNil(invite.state)
+                XCTAssertEqual(invite.state, InviteState.Pending)
+            }
+            return ""
         }
         
-        guard let response = try? droplet.respond(to: request) else { XCTFail() }
+        let response = try droplet.respond(to: request)
+        
+        XCTAssertNotEqual(response.status, Status.notFound)
     }
 }

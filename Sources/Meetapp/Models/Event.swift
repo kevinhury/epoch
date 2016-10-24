@@ -21,11 +21,11 @@ public final class Event: Model {
     var photoURL: String = ""
     var rsvpDeadline: Int
     
-    var ownerId: Node
+    var userId: Node
     
     public init(node: Node, in context: Context) throws {
         self.id = node["id"]
-        self.ownerId = try node.extract("owner_id")
+        self.userId = try node.extract("user_id")
         self.name = try node.extract("name")
         self.description = try node.extract("description")
         self.location = try node.extract("location")
@@ -36,7 +36,7 @@ public final class Event: Model {
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
-            "owner_id": ownerId,
+            "user_id": userId,
             "name": name,
             "description": description,
             "location": location,
@@ -52,7 +52,7 @@ extension Event: Preparation {
     public static func prepare(_ database: Database) throws {
         try database.create("events") { (creator) in
             creator.id()
-            creator.int("owner_id")
+            creator.int("user_id")
             creator.string("name")
             creator.string("description")
             creator.string("location")
@@ -67,7 +67,7 @@ extension Event: Preparation {
 extension Event {
     
     func owner() throws -> Parent<User> {
-        return try parent(ownerId)
+        return try parent(userId)
     }
 }
 
