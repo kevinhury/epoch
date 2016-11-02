@@ -7,6 +7,7 @@
 //
 
 import Vapor
+import EpochAuth
 import Fluent
 
 public final class DatePollSelection: Model {
@@ -42,4 +43,14 @@ extension DatePollSelection: Preparation {
     }
     
     public static func revert(_ database: Database) throws {}
+}
+
+extension DatePollSelection {
+    func user() throws -> Parent<EpochAuth.User> {
+        return try parent(userId)
+    }
+    
+    func datepoll() throws -> Parent<DatePoll> {
+        return try parent(datepollId)
+    }
 }

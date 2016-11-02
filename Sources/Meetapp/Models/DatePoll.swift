@@ -43,3 +43,13 @@ extension DatePoll: Preparation {
     
     public static func revert(_ database: Database) throws {}
 }
+
+extension DatePoll {
+    func event() throws -> Parent<Event> {
+        return try parent(eventId)
+    }
+    
+    func selections() -> Children<DatePollSelection> {
+        return children()
+    }
+}

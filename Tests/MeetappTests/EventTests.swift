@@ -31,36 +31,21 @@ class EventTests: XCTestCase {
         EpochAuth.User.database = database
         Meetapp.Event.database = database
         
-        let credentials = UsernamePassword(username: "moshiko", password: "balagan")
-        owner = EpochAuth.User(credentials: credentials)
+        owner = try? TestsUtils.generateUser()
         try? owner.save()
     }
     
-    func eventNode(userId: Node) throws -> Node {
-        return try Node(node: [
-            "user_id": userId,
-            "name": "EventName",
-            "description": "EventDescription",
-            "location": "-19.2222;32.20222",
-            "photo_url": "",
-            "rsvp_deadline": 123123
-        ])
-    }
-    
     func testEventCreation() throws {
-        let node = try eventNode(userId: owner.id!)
-        var event = try Event(node: node)
+        var event = try TestsUtils.generateEvent(userId: owner.id!)
         try event.save()
         
-        XCTAssertEqual(event.name, try node.extract("name"))
-        XCTAssertEqual(event.description, try node.extract("description"))
-        XCTAssertEqual(event.location, try node.extract("location"))
-        XCTAssertEqual(event.photoURL, try node.extract("photo_url"))
-        XCTAssertEqual(event.rsvpDeadline, try node.extract("rsvp_deadline"))
+        XCTAssertNotNil(event)
+        XCTAssertTrue(event.exists)
+        XCTAssertNotNil(event.id)
     }
     
     func testEventOwner() throws {
-        var event = try Event(node: try eventNode(userId: owner.id!))
+        var event = try TestsUtils.generateEvent(userId: owner.id!)
         try event.save()
         let eventOwner = try event.owner().get()
         
@@ -69,7 +54,7 @@ class EventTests: XCTestCase {
     }
     
     func testOwnerChildren() throws {
-        var event = try Event(node: try eventNode(userId: owner.id!))
+        var event = try TestsUtils.generateEvent(userId: owner.id!)
         try event.save()
         
         let ownersEvent = try owner.events()
