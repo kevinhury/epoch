@@ -27,7 +27,7 @@ public final class DatePollsController {
             let atendeeId = request.json?["atendeeId"]?.int,
             let pollId = request.json?["pollId"]?.int
         else {
-            throw Abort.badRequest
+            throw Abort.custom(status: .badRequest, message: "Missing parameters.")
         }
         
         var on: Bool = false

@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Vapor
 import Fluent
 import HTTP
 import JSON
@@ -66,6 +67,25 @@ class DatePollControllerTests: XCTestCase {
             XCTAssertEqual(status2, false)
         } catch {
             XCTFail("no response")
+        }
+    }
+    
+    func testMissingParamsInVoteRoute() {
+        request.json = try? JSON(node: [
+            "eventId": 1,
+            "pollId": 2,
+            "atendeeId": 3,
+        ])
+        ["pollId", "atendeeId"].forEach { param in
+            request.json?[param] = nil
+            do {
+                _ = try controller.vote(request: request!)
+                XCTFail("No error for missing parameter was thrown.")
+            } catch Abort.custom(_, let message) {
+                XCTAssertEqual(message, "Missing parameters.")
+            } catch {
+                XCTFail("Unkown error occured.")
+            }
         }
     }
 }
