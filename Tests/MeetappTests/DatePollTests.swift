@@ -56,6 +56,19 @@ class DatePollTests: XCTestCase {
         XCTAssertEqual(fetchedEvent?.id, event.id)
     }
     
+    func testInvalidDateObjectInPoll() {
+        do {
+            let date = "stam taarih"
+            let node = try Node(node: [
+                "date": date,
+                "event_id": Node(1)
+            ])
+            var poll = try DatePoll(node: node)
+            try poll.save()
+            XCTFail("Should throw error on invalid date object.")
+        } catch {}
+    }
+    
     func testSelection() throws {
         let atendee = try TestsUtils.generateAtendee(eventId: nil)
         guard let userId = atendee.id else { return XCTFail("Saving user model failed.") }
