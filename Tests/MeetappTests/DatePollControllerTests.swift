@@ -17,6 +17,7 @@ class DatePollControllerTests: XCTestCase {
     static var allTests: [(String, (DatePollControllerTests) -> () throws -> Void)] {
         return [
             ("testVoteRoute", testVoteRoute),
+            ("testMissingParamsInVoteRoute", testMissingParamsInVoteRoute),
         ]
     }
     

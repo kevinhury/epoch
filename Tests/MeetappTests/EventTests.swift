@@ -17,6 +17,7 @@ class EventTests: XCTestCase {
             ("testEventCreation", testEventCreation),
             ("testEventOwner", testEventOwner),
             ("testOwnerChildren", testOwnerChildren),
+            ("testEventLocationFormat", testEventLocationFormat),
         ]
     }
     

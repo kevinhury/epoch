@@ -16,6 +16,7 @@ class DatePollTests: XCTestCase {
         return [
             ("testDatePollCreation", testDatePollCreation),
             ("testSelection", testSelection),
+            ("testInvalidDateObjectInPoll", testInvalidDateObjectInPoll),
         ]
     }
     
