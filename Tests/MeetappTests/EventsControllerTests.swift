@@ -27,6 +27,9 @@ class EventsControllerTests: XCTestCase {
         database = Database(MemoryDriver())
         droplet = Droplet()
         
+        Meetapp.Event.database = database
+        Meetapp.Atendee.database = database
+        
         droplet.database = database
     }
     
@@ -52,5 +55,51 @@ class EventsControllerTests: XCTestCase {
         let response = try droplet.respond(to: request)
         
         XCTAssertEqual(response.status, Status.ok)
+    }
+    
+    func testGetUserEventsRoute() {
+        guard
+            var atendee = try? TestsUtils.generateAtendee(eventId: nil),
+            let ownerId = atendee.id,
+            var event1 = try? TestsUtils.generateEvent(ownerId: ownerId),
+            var event2 = try? TestsUtils.generateEvent(ownerId: ownerId)
+        else {
+            return XCTFail("Failed instantiating owner or events.")
+        }
+        
+        do {
+            try atendee.save()
+            try event1.save()
+            try event2.save()
+        } catch {
+            XCTFail("Saving mock models failed.")
+        }
+        
+        let request = try! Request(method: .get, uri: "*")
+        request.json = try! JSON(node: ["id": ownerId])
+        
+        do {
+            let controller = EventsController()
+            let response = try controller.eventsById(request: request).makeResponse()
+            XCTAssertEqual(response.status, Status.ok)
+            XCTAssertNotNil(response.json)
+            
+            let events = response.json?.array
+            XCTAssertEqual(events?.count, 2)
+        } catch {
+            XCTFail("Unexpected response.")
+        }
+    }
+    
+    func testGetEventByIdRoute() {
+        XCTFail()
+    }
+    
+    func testCreateEventRoute() {
+        XCTFail()
+    }
+    
+    func testModifyEventRoute() {
+        XCTFail()
     }
 }

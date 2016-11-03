@@ -60,4 +60,15 @@ class EventTests: XCTestCase {
         
         XCTAssertEqual(ownersEvent?.id, event.id)
     }
+    
+    func testEventLocationFormat() {
+        var node = try! TestsUtils.generateEventNode(ownerId: Node(1))
+        
+        do {
+            node["location"] = "stam location"
+            var event = try Event(node: node)
+            try event.save()
+            XCTFail("Should throw error on invalid location object.")
+        } catch {}
+    }
 }

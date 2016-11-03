@@ -42,8 +42,12 @@ private let protect = ProtectMiddleware(
     error: Abort.custom(status: .unauthorized, message: "Invalid credentials.")
 )
 drop.grouped(baseAuth, protect).resource("posts", PostController())
-drop.grouped(baseAuth, protect).resource("events", EventsController())
-drop.grouped(baseAuth, protect).group("datepoll") { (group) in
+
+drop.grouped(baseAuth, protect).group("events") { group in
+    let controller = EventsController()
+}
+
+drop.grouped(baseAuth, protect).group("datepoll") { group in
     let controller = DatePollsController()
     group.post("vote", handler: controller.vote)
 }

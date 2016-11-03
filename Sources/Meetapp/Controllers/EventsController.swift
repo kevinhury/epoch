@@ -9,15 +9,44 @@
 import Vapor
 import HTTP
 
-public final class EventsController: ResourceRepresentable {
-    public typealias Model = Event
-    
+public final class EventsController {
     public init() {}
     
+    // Get all events
+    //TODO: Remove before production
     func index(request: Request) throws -> ResponseRepresentable {
         return try Event.all().makeNode().converted(to: JSON.self)
     }
     
+    
+    /**
+     * @api {get} /events/:id
+     *
+     * @apiParam {Int} id atendee id.
+     *
+     * @apiSuccess {[Event]} events array of all user events
+     */
+    func eventsById(request: Request) throws -> ResponseRepresentable {
+        guard
+            let atendeeId = request.json?["id"]?.int
+        else {
+            throw Abort.badRequest
+        }
+        
+        let events = try Event
+            .query()
+            .filter("owner_id", atendeeId)
+            .all()
+            .makeNode()
+        
+        return try Response(status: .ok, json: try JSON(node: events))
+    }
+    
+    func eventVerboseData(request: Request) throws -> ResponseRepresentable {
+        return ""
+    }
+    
+    // Create a new event
     func create(request: Request) throws -> ResponseRepresentable {
         var event = try request.event()
         let invitees = try request.invitees(eventId: event.id)
@@ -34,12 +63,13 @@ public final class EventsController: ResourceRepresentable {
         return event
     }
     
-    public func makeResource() -> Resource<Event> {
-        return Resource(
-            index: index,
-            store: create
-        )
+    // Modify an event
+    // Authenticate event owner
+    func modify(request: Request) throws -> ResponseRepresentable {
+        return ""
     }
+    
+    
 }
 
 extension Request {

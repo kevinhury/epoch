@@ -34,8 +34,8 @@ class TestsUtils {
         return atendee
     }
     
-    class func generateEvent(ownerId: Node) throws -> Meetapp.Event {
-        let node = try Node(node: [
+    class func generateEventNode(ownerId: Node) throws -> Node {
+        return try Node(node: [
             "owner_id": ownerId,
             "name": "EventName",
             "description": "EventDescription",
@@ -43,6 +43,10 @@ class TestsUtils {
             "photo_url": "",
             "rsvp_deadline": 123123
         ])
+    }
+    
+    class func generateEvent(ownerId: Node) throws -> Meetapp.Event {
+        let node = try generateEventNode(ownerId: ownerId)
         var event = try Event(node: node)
         try event.save()
         
