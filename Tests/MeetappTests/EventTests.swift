@@ -9,7 +9,6 @@
 import XCTest
 import Fluent
 import Turnstile
-@testable import EpochAuth
 @testable import Meetapp
 
 class EventTests: XCTestCase {
@@ -21,22 +20,21 @@ class EventTests: XCTestCase {
         ]
     }
     
+    var owner: Atendee!
     var database: Database!
-    var owner: EpochAuth.User!
-    
     
     override func setUp() {
         database = Database(MemoryDriver())
         
-        EpochAuth.User.database = database
+        Meetapp.Atendee.database = database
         Meetapp.Event.database = database
+        Pivot<Meetapp.Atendee, Meetapp.Event>.database = database
         
-        owner = try? TestsUtils.generateUser()
-        try? owner.save()
+        owner = try? TestsUtils.generateAtendee(eventId: nil)
     }
     
     func testEventCreation() throws {
-        var event = try TestsUtils.generateEvent(userId: owner.id!)
+        var event = try TestsUtils.generateEvent(ownerId: owner.id!)
         try event.save()
         
         XCTAssertNotNil(event)
@@ -45,16 +43,15 @@ class EventTests: XCTestCase {
     }
     
     func testEventOwner() throws {
-        var event = try TestsUtils.generateEvent(userId: owner.id!)
+        var event = try TestsUtils.generateEvent(ownerId: owner.id!)
         try event.save()
         let eventOwner = try event.owner().get()
         
-        XCTAssertEqual(eventOwner?.uniqueID, owner.uniqueID)
-        XCTAssertEqual(eventOwner?.apiKeyId, owner.apiKeyId)
+        XCTAssertEqual(eventOwner?.id, owner.id)
     }
     
     func testOwnerChildren() throws {
-        var event = try TestsUtils.generateEvent(userId: owner.id!)
+        var event = try TestsUtils.generateEvent(ownerId: owner.id!)
         try event.save()
         
         let ownersEvent = try owner.events()

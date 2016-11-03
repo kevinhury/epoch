@@ -8,6 +8,7 @@
 
 import Vapor
 import VaporMySQL
+import Fluent
 import Auth
 import EpochAuth
 import Meetapp
@@ -18,7 +19,9 @@ try drop.addProvider(VaporMySQL.Provider.self)
 drop.addConfigurable(middleware: AuthMiddleware(user: User.self), name: "auth")
 drop.preparations.append(User.self)
 drop.preparations.append(Post.self)
-drop.preparations.append(Event.self)
+drop.preparations.append(Meetapp.Event.self)
+drop.preparations.append(Meetapp.Atendee.self)
+drop.preparations.append(Pivot<Meetapp.Event, Meetapp.Atendee>.self)
 
 
 drop.get { req in
@@ -40,5 +43,9 @@ private let protect = ProtectMiddleware(
 )
 drop.grouped(baseAuth, protect).resource("posts", PostController())
 drop.grouped(baseAuth, protect).resource("events", EventsController())
+drop.grouped(baseAuth, protect).group("datepoll") { (group) in
+    let controller = DatePollsController()
+    group.post("vote", handler: controller.vote)
+}
 
 drop.run()

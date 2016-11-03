@@ -8,7 +8,6 @@
 
 import Vapor
 import Fluent
-import EpochAuth
 
 enum InviteState: Int {
     case Pending = 0
@@ -23,7 +22,7 @@ public final class EventInvite: Model {
     public var id: Node?
     public var stateId: Int
     public var eventId: Node
-    public var userId: Node
+    public var atendeeId: Node
     
     var state: InviteState? {
         return InviteState(rawValue: stateId)
@@ -33,14 +32,14 @@ public final class EventInvite: Model {
         self.id = node["id"]
         self.stateId = try node.extract("state_id")
         self.eventId = try node.extract("event_id")
-        self.userId = try node.extract("user_id")
+        self.atendeeId = try node.extract("atendee_id")
     }
     
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "state_id": stateId,
             "event_id": eventId,
-            "user_id": userId
+            "atendee_id": atendeeId
         ])
     }
 }
@@ -51,7 +50,7 @@ extension EventInvite: Preparation {
             creator.id()
             creator.int("state_id")
             creator.int("event_id")
-            creator.int("user_id")
+            creator.int("atendee_id")
         }
     }
     
@@ -59,12 +58,11 @@ extension EventInvite: Preparation {
 }
 
 extension EventInvite {
-    
     func event() throws -> Parent<Event> {
         return try parent(eventId)
     }
     
-    func user() throws -> Parent<User> {
-        return try parent(userId)
+    func user() throws -> Parent<Atendee> {
+        return try parent(atendeeId)
     }
 }

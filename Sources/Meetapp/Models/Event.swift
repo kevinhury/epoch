@@ -8,7 +8,6 @@
 
 import Vapor
 import Fluent
-import EpochAuth
 
 public final class Event: Model {
     public var exists: Bool = false
@@ -21,11 +20,11 @@ public final class Event: Model {
     var photoURL: String = ""
     var rsvpDeadline: Int
     
-    var userId: Node
+    var ownerId: Node
     
     public init(node: Node, in context: Context) throws {
         self.id = node["id"]
-        self.userId = try node.extract("user_id")
+        self.ownerId = try node.extract("owner_id")
         self.name = try node.extract("name")
         self.description = try node.extract("description")
         self.location = try node.extract("location")
@@ -36,7 +35,7 @@ public final class Event: Model {
     public func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
-            "user_id": userId,
+            "owner_id": ownerId,
             "name": name,
             "description": description,
             "location": location,
@@ -52,7 +51,7 @@ extension Event: Preparation {
     public static func prepare(_ database: Database) throws {
         try database.create("events") { (creator) in
             creator.id()
-            creator.int("user_id")
+            creator.int("owner_id")
             creator.string("name")
             creator.string("description")
             creator.string("location")
@@ -65,15 +64,11 @@ extension Event: Preparation {
 }
 
 extension Event {
-    
-    func owner() throws -> Parent<User> {
-        return try parent(userId)
+    func atendees() throws -> Siblings<Atendee> {
+        return try siblings()
     }
-}
-
-extension User {
     
-    func events() throws -> Children<Event> {
-        return children()
+    func owner() throws -> Parent<Atendee> {
+        return try parent(ownerId)
     }
 }

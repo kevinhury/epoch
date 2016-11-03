@@ -34,11 +34,7 @@ public final class EventsController: ResourceRepresentable {
 
 extension Request {
     func event() throws -> Event {
-        guard var json = json else { throw Abort.badRequest }
-        
-        let userId = try auth.user().uniqueID
-        json["user_id"] = try JSON(node: Node(userId))
-        
+        guard let json = json else { throw Abort.badRequest }
         return try Event(node: json)
     }
     
@@ -46,10 +42,10 @@ extension Request {
         guard let json = json else { throw Abort.badRequest }
         
         let invitees: [String] = try json.extract("invitees")
-        return try invitees.map { userId in
+        return try invitees.map { antendeeId in
             let node = try JSON(node: [
                 "state_id": 0,
-                "user_id": userId,
+                "atendee_id": antendeeId,
                 "event_id": eventId
             ])
             return try EventInvite(node: node)

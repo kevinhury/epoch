@@ -9,7 +9,6 @@
 import XCTest
 import Vapor
 import Fluent
-import EpochAuth
 @testable import Meetapp
 
 class DatePollTests: XCTestCase {
@@ -22,7 +21,6 @@ class DatePollTests: XCTestCase {
     
     var database: Database!
     var droplet: Droplet!
-    var user: EpochAuth.User!
     
     override func setUp() {
         database = Database(MemoryDriver())
@@ -30,16 +28,14 @@ class DatePollTests: XCTestCase {
         Event.database = database
         DatePoll.database = database
         DatePollSelection.database = database
-        EpochAuth.User.database = database
-        
-        user = try? TestsUtils.generateUser()
-        try? user.save()
+        Atendee.database = database
     }
     
     func testDatePollCreation() throws {
-        guard let userId = user.id else { return XCTFail("Saving user model failed.") }
+        let atendee = try TestsUtils.generateAtendee(eventId: nil)
+        guard let atendeeId = atendee.id else { return XCTFail("Saving user model failed.") }
         
-        var event = try TestsUtils.generateEvent(userId: userId)
+        var event = try TestsUtils.generateEvent(ownerId: atendeeId)
         try event.save()
         
         let date = "04 Nov 2014 11:45:34"
@@ -61,12 +57,10 @@ class DatePollTests: XCTestCase {
     }
     
     func testSelection() throws {
-        var user = try TestsUtils.generateUser()
-        try user.save()
+        let atendee = try TestsUtils.generateAtendee(eventId: nil)
+        guard let userId = atendee.id else { return XCTFail("Saving user model failed.") }
         
-        guard let userId = user.id else { return XCTFail("Saving user model failed.") }
-        
-        var event = try TestsUtils.generateEvent(userId: userId)
+        var event = try TestsUtils.generateEvent(ownerId: userId)
         try event.save()
         
         guard let eventId = event.id else { return XCTFail("Saving event model failed.") }
@@ -78,13 +72,13 @@ class DatePollTests: XCTestCase {
         try poll.save()
         
         var selection = try DatePollSelection(node: try Node(node: [
-            "user_id": userId,
+            "atendee_id": userId,
             "datepoll_id": poll.id!
         ]))
         try selection.save()
         
         let selectionUser = try selection
-            .user()
+            .atendee()
             .makeQuery()
             .first()
         

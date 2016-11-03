@@ -51,6 +51,6 @@ class EventsControllerTests: XCTestCase {
         
         let response = try droplet.respond(to: request)
         
-        XCTAssertNotEqual(response.status, Status.notFound)
+        XCTAssertEqual(response.status, Status.ok)
     }
 }
