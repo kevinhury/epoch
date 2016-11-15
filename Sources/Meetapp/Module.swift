@@ -40,6 +40,7 @@ public final class Module {
         routeGroup.get("eventVerboseData", handler: eventsController.eventVerboseData)
         routeGroup.get("index", handler: eventsController.index)
         routeGroup.patch("modify", handler: eventsController.modify)
+        routeGroup.patch("changeInviteeStatus", handler: eventsController.changeInviteeStatus)
     }
     
     public func registerVoteRoutes(routeGroup: RouteGroup<Responder, RouteGroup<Responder, Droplet>>) {

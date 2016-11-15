@@ -92,7 +92,41 @@ final class EventsController {
     }
     
     /**
-     * @api {post} /events/create
+     * @api {patch}
+     *
+     * apiParam {Int} atendee_id
+     * apiParam {Int} event_id
+     * apiParam {Int} state
+     *
+     * apiSuccess {EventInvite}
+     */
+    func changeInviteeStatus(request: Request) throws -> ResponseRepresentable {
+        guard
+            let atendee_id = request.json?["atendee_id"]?.int,
+            let event_id = request.json?["event_id"]?.int,
+            let state = request.json?["state"]?.int,
+            let inviteState = InviteState(rawValue: state)
+        else {
+            throw Abort.badRequest
+        }
+        
+        guard var invite = try EventInvite
+            .query()
+            .filter("atendee_id", atendee_id)
+            .filter("event_id", event_id)
+            .first()
+        else {
+            throw Abort.badRequest
+        }
+        
+        invite.state = inviteState.rawValue
+        try invite.save()
+        
+        return invite
+    }
+    
+    /**
+     * @api {patch} /events/modify
      * apiParam {Int} owner_id
      * apiParam {Int} event_id
      *
