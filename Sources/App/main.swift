@@ -18,10 +18,6 @@ let drop = Droplet()
 try drop.addProvider(VaporMySQL.Provider.self)
 drop.addConfigurable(middleware: AuthMiddleware(user: User.self), name: "auth")
 drop.preparations.append(User.self)
-drop.preparations.append(Post.self)
-drop.preparations.append(Meetapp.Event.self)
-drop.preparations.append(Meetapp.Atendee.self)
-drop.preparations.append(Pivot<Meetapp.Event, Meetapp.Atendee>.self)
 
 
 drop.get { req in
@@ -30,26 +26,31 @@ drop.get { req in
     ])
 }
 
-// Authentication handlers
+private let baseAuth = BasicAuthMiddleware()
+private let protect = ProtectMiddleware(
+    error: Abort.custom(status: .unauthorized, message: "Invalid credentials.")
+)
+
+
+// ******* EPOCHAUTH MODULE *******
+
 drop.group("auth") { (group) in
     let usersController: AuthenticationController = UsersController()
     group.post("registration", handler: usersController.register)
     group.post("login", handler: usersController.login)
 }
 
-private let baseAuth = BasicAuthMiddleware()
-private let protect = ProtectMiddleware(
-    error: Abort.custom(status: .unauthorized, message: "Invalid credentials.")
-)
-drop.grouped(baseAuth, protect).resource("posts", PostController())
+// ******* MEETAPP MODULE *******
+
+let meetapp = Meetapp.Module(droplet: drop)
+meetapp.addPreparations()
 
 drop.grouped(baseAuth, protect).group("events") { group in
-    let controller = EventsController()
+    meetapp.registerEventRoutes(routeGroup: group)
 }
 
 drop.grouped(baseAuth, protect).group("datepoll") { group in
-    let controller = DatePollsController()
-    group.post("vote", handler: controller.vote)
+    meetapp.registerVoteRoutes(routeGroup: group)
 }
 
 drop.run()

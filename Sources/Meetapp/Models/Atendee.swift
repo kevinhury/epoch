@@ -9,21 +9,23 @@
 import Vapor
 import Fluent
 
-public final class Atendee: Model {
-    public var exists: Bool = false
+private let ENTITY_NAME = "atendees"
+
+final class Atendee: Model {
+    var exists: Bool = false
     
     // Database fields
-    public var id: Node?
+    var id: Node?
     var authId: Node?
     var eventId: Node?
     
-    public init(node: Node, in context: Context) throws {
+    init(node: Node, in context: Context) throws {
         self.id = node["id"]
         self.eventId = node["event_id"]
         self.authId = node["auth_id"]
     }
     
-    public func makeNode(context: Context) throws -> Node {
+    func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
             "auth_id": authId,
@@ -33,15 +35,17 @@ public final class Atendee: Model {
 }
 
 extension Atendee: Preparation {
-    public static func prepare(_ database: Database) throws {
-        try database.create("atendees") { creator in
+    static func prepare(_ database: Database) throws {
+        try database.create(ENTITY_NAME) { creator in
             creator.id()
             creator.int("auth_id")
             creator.int("event_id")
         }
     }
     
-    public static func revert(_ database: Database) throws {}
+    static func revert(_ database: Database) throws {
+        try database.delete(ENTITY_NAME)
+    }
 }
 
 extension Atendee {

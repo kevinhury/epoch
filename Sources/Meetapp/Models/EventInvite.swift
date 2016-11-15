@@ -9,33 +9,35 @@
 import Vapor
 import Fluent
 
+private let ENTITY_NAME = "event_invites"
+
 enum InviteState: Int {
     case Pending = 0
     case Going
     case NotGoing
 }
 
-public final class EventInvite: Model {
-    public var exists: Bool = false
+final class EventInvite: Model {
+    var exists: Bool = false
     
     // Database fields
-    public var id: Node?
-    public var stateId: Int
-    public var eventId: Node
-    public var atendeeId: Node
+    var id: Node?
+    var stateId: Int
+    var eventId: Node
+    var atendeeId: Node
     
     var state: InviteState? {
         return InviteState(rawValue: stateId)
     }
     
-    public init(node: Node, in context: Context) throws {
+    init(node: Node, in context: Context) throws {
         self.id = node["id"]
         self.stateId = try node.extract("state_id")
         self.eventId = try node.extract("event_id")
         self.atendeeId = try node.extract("atendee_id")
     }
     
-    public func makeNode(context: Context) throws -> Node {
+    func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "state_id": stateId,
             "event_id": eventId,
@@ -45,8 +47,8 @@ public final class EventInvite: Model {
 }
 
 extension EventInvite: Preparation {
-    public static func prepare(_ database: Database) throws {
-        try database.create("event_invites") { creator in
+    static func prepare(_ database: Database) throws {
+        try database.create(ENTITY_NAME) { creator in
             creator.id()
             creator.int("state_id")
             creator.int("event_id")
@@ -54,7 +56,9 @@ extension EventInvite: Preparation {
         }
     }
     
-    public static func revert(_ database: Database) throws {}
+    static func revert(_ database: Database) throws {
+        try database.delete(ENTITY_NAME)
+    }
 }
 
 extension EventInvite {

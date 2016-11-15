@@ -86,7 +86,7 @@ class EventsControllerTests: XCTestCase {
         
         do {
             let controller = EventsController()
-            let response = try controller.eventsById(request: request).makeResponse()
+            let response = try controller.eventsByOwnerId(request: request).makeResponse()
             XCTAssertEqual(response.status, Status.ok)
             XCTAssertNotNil(response.json)
             

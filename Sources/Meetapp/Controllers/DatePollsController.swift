@@ -9,7 +9,7 @@
 import Vapor
 import HTTP
 
-public final class DatePollsController {
+final class DatePollsController {
     
     public init() {}
     

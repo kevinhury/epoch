@@ -9,21 +9,23 @@
 import Vapor
 import Fluent
 
-public final class DatePollSelection: Model {
-    public var exists: Bool = false
+private let ENTITY_NAME = "datepolls_selections"
+
+final class DatePollSelection: Model {
+    var exists: Bool = false
     
     // Database fields
-    public var id: Node?
+    var id: Node?
     var atendeeId: Node
     var datepollId: Node
     
-    public init(node: Node, in context: Context) throws {
+    init(node: Node, in context: Context) throws {
         self.id = node["id"]
         self.atendeeId = try node.extract("atendee_id")
         self.datepollId = try node.extract("datepoll_id")
     }
     
-    public func makeNode(context: Context) throws -> Node {
+    func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
             "atendee_id": atendeeId,
@@ -33,15 +35,17 @@ public final class DatePollSelection: Model {
 }
 
 extension DatePollSelection: Preparation {
-    public static func prepare(_ database: Database) throws {
-        try database.create("datepolls_selections") { creator in
+    static func prepare(_ database: Database) throws {
+        try database.create(ENTITY_NAME) { creator in
             creator.id()
             creator.int("atendee_id")
             creator.int("datepoll_id")
         }
     }
     
-    public static func revert(_ database: Database) throws {}
+    static func revert(_ database: Database) throws {
+        try database.delete(ENTITY_NAME)
+    }
 }
 
 extension DatePollSelection {

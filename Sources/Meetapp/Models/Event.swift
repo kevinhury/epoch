@@ -9,11 +9,13 @@
 import Vapor
 import Fluent
 
-public final class Event: Model {
-    public var exists: Bool = false
+private let ENTITY_NAME = "events"
+
+final class Event: Model {
+    var exists: Bool = false
     
     // Database fields
-    public var id: Node?
+    var id: Node?
     var name: String
     var description: String
     var location: String
@@ -22,7 +24,7 @@ public final class Event: Model {
     
     var ownerId: Node
     
-    public init(node: Node, in context: Context) throws {
+    init(node: Node, in context: Context) throws {
         self.id = node["id"]
         self.ownerId = try node.extract("owner_id")
         self.name = try node.extract("name")
@@ -32,7 +34,7 @@ public final class Event: Model {
         self.rsvpDeadline = try node.extract("rsvp_deadline")
     }
     
-    public func makeNode(context: Context) throws -> Node {
+    func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
             "owner_id": ownerId,
@@ -48,8 +50,8 @@ public final class Event: Model {
 
 extension Event: Preparation {
     
-    public static func prepare(_ database: Database) throws {
-        try database.create("events") { (creator) in
+    static func prepare(_ database: Database) throws {
+        try database.create(ENTITY_NAME) { (creator) in
             creator.id()
             creator.int("owner_id")
             creator.string("name")
@@ -60,7 +62,9 @@ extension Event: Preparation {
         }
     }
     
-    public static func revert(_ database: Database) throws {}
+    static func revert(_ database: Database) throws {
+        try database.delete(ENTITY_NAME)
+    }
 }
 
 extension Event {

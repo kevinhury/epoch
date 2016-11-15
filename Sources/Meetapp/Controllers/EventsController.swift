@@ -9,8 +9,8 @@
 import Vapor
 import HTTP
 
-public final class EventsController {
-    public init() {}
+final class EventsController {
+    init() {}
     
     // Get all events
     //TODO: Remove before production
@@ -26,7 +26,7 @@ public final class EventsController {
      *
      * @apiSuccess {[Event]} events array of all user events.
      */
-    func eventsById(request: Request) throws -> ResponseRepresentable {
+    func eventsByOwnerId(request: Request) throws -> ResponseRepresentable {
         guard
             let atendeeId = request.json?["ownerId"]?.int
         else {
