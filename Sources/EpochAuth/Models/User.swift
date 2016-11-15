@@ -172,6 +172,8 @@ extension User: Preparation {
             creator.string("api_key_id")
             creator.string("api_key_secret")
         }
+        
+        try database.driver.raw("insert into users (username, password, facebook_id, google_id, api_key_id, api_key_secret) values ('kevin', 'pass', '', '', 'test', '123123');")
     }
     public static func revert(_ database: Database) throws {}
 }

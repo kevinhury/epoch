@@ -39,30 +39,6 @@ class EventsControllerTests: XCTestCase {
         droplet.database = database
     }
     
-    func testRequestInviteesParser() throws {
-        let mock = try JSON(node: [
-            "invitees": Node(node: ["kevin", "gabi"])
-        ])
-        
-        let request = try Request(method: .get, uri: "*")
-        request.json = mock
-        
-        droplet.get("*") { request in
-            let invitees = try request.invitees(eventId: 2)
-            XCTAssertEqual(invitees.count, 2)
-            invitees.forEach { invite in
-                XCTAssertEqual(invite.eventId, 2)
-                XCTAssertNotNil(invite.state)
-                XCTAssertEqual(invite.state, InviteState.Pending)
-            }
-            return ""
-        }
-        
-        let response = try droplet.respond(to: request)
-        
-        XCTAssertEqual(response.status, Status.ok)
-    }
-    
     func testGetUserEventsRoute() {
         guard
             var atendee = try? TestsUtils.generateAtendee(eventId: nil),
@@ -176,6 +152,10 @@ class EventsControllerTests: XCTestCase {
         } catch {
             XCTFail("Querying data models failed.")
         }
+    }
+    
+    func testEmptyDatesInEventCreateRoute() {
+        XCTFail("unimplemented.")
     }
     
     func testModifyEventRoute() {

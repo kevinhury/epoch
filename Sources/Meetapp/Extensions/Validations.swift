@@ -7,11 +7,12 @@
 //
 
 import Vapor
+import Foundation
 
 final class LatLng: ValidationSuite {
     typealias InputType = String
     
-    static func validate(input value: InputType) throws {
+    static func validate(input value: String) throws {
         let latlng = value.components(separatedBy: ";")
         guard
             latlng.count == 2,

@@ -39,7 +39,7 @@ public final class Module {
         routeGroup.get("eventsByOwnerId", handler: eventsController.eventsByOwnerId)
         routeGroup.get("eventVerboseData", handler: eventsController.eventVerboseData)
         routeGroup.get("index", handler: eventsController.index)
-        routeGroup.put("modify", handler: eventsController.modify)
+        routeGroup.patch("modify", handler: eventsController.modify)
     }
     
     public func registerVoteRoutes(routeGroup: RouteGroup<Responder, RouteGroup<Responder, Droplet>>) {

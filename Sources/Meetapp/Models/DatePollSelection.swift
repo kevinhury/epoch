@@ -9,7 +9,7 @@
 import Vapor
 import Fluent
 
-private let ENTITY_NAME = "datepolls_selections"
+private let ENTITY_NAME = "datepollselections"
 
 final class DatePollSelection: Model {
     var exists: Bool = false

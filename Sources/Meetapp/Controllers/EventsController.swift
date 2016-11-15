@@ -63,9 +63,18 @@ final class EventsController {
         return event
     }
     
-    // Create a new event
+    /**
+     * @api {post} /events/create
+     * apiParam {Int} owner_id _
+     * apiParam {String} name _
+     * apiParam {String} description _
+     * apiParam {String} location _
+     * apiParam {String} photo_url _
+     * apiParam {Int} rsvp_deadline _
+     *
+     * apiSuccess {Event} event the corresponding event.
+     */
     func create(request: Request) throws -> ResponseRepresentable {
-        //TODO: validate fields
         var event = try request.event()
         try event.save()
         
@@ -82,13 +91,55 @@ final class EventsController {
         return event
     }
     
-    // Modify an event
-    // Authenticate event owner
+    /**
+     * @api {post} /events/create
+     * apiParam {Int} owner_id
+     * apiParam {Int} event_id
+     *
+     * apiSuccess {Event} event the modified event.
+     */
     func modify(request: Request) throws -> ResponseRepresentable {
-        return ""
+        guard
+            let owner_id = request.json?["owner_id"]?.int,
+            let event_id = request.json?["event_id"]?.int
+        else {
+            throw Abort.badRequest
+        }
+        guard var event = try Event
+            .query()
+            .filter("id", Node(event_id))
+            .filter("owner_id", Node(owner_id))
+            .first()
+        else {
+            throw Abort.badRequest
+        }
+        
+        if let name = request.json?["name"]?.string {
+            event.name = name
+        }
+        
+        if let description = request.json?["description"]?.string {
+            event.description = description
+        }
+        
+        if let rsvp_deadline = request.json?["location"]?.int {
+            event.rsvpDeadline = rsvp_deadline
+        }
+        
+        if let photo_url = request.json?["photo_url"]?.string {
+            event.photoURL = photo_url
+        }
+        
+        if let location = request.json?["location"]?.string {
+            event.location = location
+        }
+        
+        //TODO: Modify Invitees
+        //TODO: Modify dates
+        
+        try event.save()
+        return event
     }
-    
-    
 }
 
 extension Request {
@@ -107,7 +158,6 @@ extension Request {
         let invitees: [String] = try json.extract("invitees")
         return try invitees.map { antendeeId in
             let node = try JSON(node: [
-                "state_id": 0,
                 "atendee_id": antendeeId,
                 "event_id": eventId
             ])
