@@ -27,6 +27,18 @@ final class LatLng: ValidationSuite {
         
         try latEvaluation.validate(input: lat)
         try lngEvaluation.validate(input: lng)
+    }
+}
+
+final class ValidDate: ValidationSuite {
+    typealias InputType = String
+    
+    static func validate(input value: String) throws {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
         
+        guard let _ = formatter.date(from: value) else {
+            throw error(with: value)
+        }
     }
 }

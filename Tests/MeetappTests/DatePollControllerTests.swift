@@ -45,7 +45,7 @@ class DatePollControllerTests: XCTestCase {
         do {
 
             event = try TestsUtils.generateEvent(ownerId: atendee.id!)
-            poll = try TestsUtils.generatePoll(date: "04 Nov 2014 11:45:34", eventId: event.id!)
+            poll = try TestsUtils.generatePoll(date: "2016.12.25 7:00", eventId: event.id!)
         } catch {
             XCTFail("Unable to generate test models.")
         }

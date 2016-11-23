@@ -39,7 +39,7 @@ class DatePollTests: XCTestCase {
         var event = try TestsUtils.generateEvent(ownerId: atendeeId)
         try event.save()
         
-        let date = "04 Nov 2014 11:45:34"
+        let date = "2022.12.25 7:00"
         let node = try Node(node: [
             "date": date,
             "event_id": event.id
@@ -80,7 +80,7 @@ class DatePollTests: XCTestCase {
         guard let eventId = event.id else { return XCTFail("Saving event model failed.") }
         
         var poll = try DatePoll(node: try Node(node: [
-            "date": "04 Nov 2014 11:45:34",
+            "date": "2022.12.25 7:00",
             "event_id": eventId
         ]))
         try poll.save()

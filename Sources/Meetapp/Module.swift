@@ -34,16 +34,11 @@ public final class Module {
         droplet.preparations.append(contentsOf: preparations)
     }
     
-    public func registerEventRoutes(routeGroup: RouteGroup<Responder, RouteGroup<Responder, Droplet>>) {
-        routeGroup.post("create", handler: eventsController.create)
-        routeGroup.get("eventsByOwnerId", handler: eventsController.eventsByOwnerId)
-        routeGroup.get("eventVerboseData", handler: eventsController.eventVerboseData)
-        routeGroup.get("index", handler: eventsController.index)
-        routeGroup.patch("modify", handler: eventsController.modify)
-        routeGroup.patch("changeInviteeStatus", handler: eventsController.changeInviteeStatus)
+    public func registerEventRoutes(routeGroup: RouteGroup<Responder, Droplet>) {
+        eventsController.registerRoutes(group: routeGroup)
     }
     
-    public func registerVoteRoutes(routeGroup: RouteGroup<Responder, RouteGroup<Responder, Droplet>>) {
-        routeGroup.post("vote", handler: datepollsController.vote)
+    public func registerVoteRoutes(routeGroup: RouteGroup<Responder, Droplet>) {
+        datepollsController.registerRoutes(group: routeGroup)
     }
 }

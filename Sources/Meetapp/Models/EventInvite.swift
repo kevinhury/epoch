@@ -32,6 +32,7 @@ final class EventInvite: Model {
     
     init(node: Node, in context: Context) throws {
         self.id = node["id"]
+        self.state = node["state"]?.int ?? 0
         self.eventId = try node.extract("event_id")
         self.atendeeId = try node.extract("atendee_id")
     }

@@ -16,7 +16,6 @@ import HTTP
 class EventsControllerTests: XCTestCase {
     static var allTests: [(String, (EventsControllerTests) -> () throws -> Void)] {
         return [
-            ("testRequestInviteesParser", testRequestInviteesParser),
             ("testGetUserEventsRoute", testGetUserEventsRoute),
             ("testGetEventByIdRoute", testGetEventByIdRoute),
             ("testCreateEventRoute", testCreateEventRoute),
@@ -58,8 +57,7 @@ class EventsControllerTests: XCTestCase {
         }
         
         let request = try! Request(method: .get, uri: "*")
-        request.json = try! JSON(node: ["ownerId": ownerId])
-        
+        request.parameters["id"] = ownerId
         do {
             let controller = EventsController()
             let response = try controller.eventsByOwnerId(request: request).makeResponse()
@@ -117,12 +115,12 @@ class EventsControllerTests: XCTestCase {
             "owner_id": ownerId,
             "name": "EventName",
             "description": "EventDescription",
-            "location": "-123;-123",
+            "location": "-19.2222;32.20222",
             "photo_url": "",
             "rsvp_deadline": 1234567,
             "dates": Node([
-                "04 Nov 2014 11:45:34",
-                "05 Nov 2014 00:00:00"
+                "2022.12.25 7:00",
+                "2022.12.26 7:00"
             ]),
             "invitees": Node([
                 2, 3, 4
@@ -155,10 +153,49 @@ class EventsControllerTests: XCTestCase {
     }
     
     func testEmptyDatesInEventCreateRoute() {
-        XCTFail("unimplemented.")
+        guard
+            let eventNode = try? TestsUtils.generateEventNode(ownerId: Node(1))
+        else {
+            return XCTFail("Failed creating event.")
+        }
+
+        let request = try! Request(method: .post, uri: "*")
+        request.json = try! JSON(node: eventNode)
+        
+        do {
+            let controller = EventsController()
+            let response = try controller.create(request: request).makeResponse()
+            XCTAssertNotEqual(response.status, Status.ok)
+        } catch {}
     }
     
     func testModifyEventRoute() {
-        XCTFail("unimplemented.")
+        guard
+            let user = try? TestsUtils.generateAtendee(eventId: nil),
+            let ownerId = user.id,
+            let event = try? TestsUtils.generateEvent(ownerId: ownerId),
+            let eventId = event.id
+        else {
+            return XCTFail("Failed creating event.")
+        }
+        
+        let descriptionToTest = "abcdefg"
+        
+        let request = try! Request(method: .patch, uri: "*")
+        request.json = try! JSON(node: Node([
+            "owner_id": ownerId,
+            "event_id": eventId,
+            "description": Node(descriptionToTest),
+        ]))
+        
+        do {
+            let controller = EventsController()
+            let response = try controller.modify(request: request).makeResponse()
+            let description = try response.json!.extract("description") as String
+            XCTAssertEqual(response.status, Status.ok)
+            XCTAssertEqual(description, descriptionToTest)
+        } catch {
+            XCTFail("Unable to create response")
+        }
     }
 }

@@ -21,8 +21,10 @@ final class DatePoll: Model {
     
     init(node: Node, in context: Context) throws {
         self.id = node["id"]
-        self.date = try node.extract("date")
         self.eventId = try node.extract("event_id")
+        
+        let date: String = try node.extract("date")
+        self.date = try date.validated(by: ValidDate.self).value
     }
     
     func makeNode(context: Context) throws -> Node {

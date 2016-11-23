@@ -8,9 +8,21 @@
 
 import Vapor
 import HTTP
+import Routing
+import Auth
 
 final class EventsController {
     init() {}
+    
+    func registerRoutes(group: RouteGroup<Responder, Droplet>, path: String = "events") {
+        let grouped = group.grouped(path)
+        grouped.get("index", handler: index)
+        grouped.get("eventsByOwnerId", ":id", handler: eventsByOwnerId)
+        grouped.get("", ":id", handler: eventVerboseData)
+        grouped.post("create", handler: create)
+        grouped.patch("changeInviteeStatus", handler: changeInviteeStatus)
+        grouped.patch("modify", handler: modify)
+    }
     
     // Get all events
     //TODO: Remove before production
@@ -22,15 +34,15 @@ final class EventsController {
     /**
      * @api {get} /events/userEvents
      *
-     * @apiParam {Int} id atendee id.
+     * @apiParam {Int} ownerId atendee id.
      *
      * @apiSuccess {[Event]} events array of all user events.
      */
     func eventsByOwnerId(request: Request) throws -> ResponseRepresentable {
         guard
-            let atendeeId = request.json?["ownerId"]?.int
+            let atendeeId = request.parameters["id"]?.int
         else {
-            throw Abort.badRequest
+            throw Abort.custom(status: .badRequest, message: "Missing parameters.")
         }
         
         let events = try Event
@@ -53,7 +65,7 @@ final class EventsController {
         guard
             let eventId = request.parameters["id"]?.int
         else {
-            throw Abort.badRequest
+            throw Abort.custom(status: .badRequest, message: "Missing parameters.")
         }
         
         guard let event = try Event.find(Node(eventId)) else {
@@ -107,7 +119,7 @@ final class EventsController {
             let state = request.json?["state"]?.int,
             let inviteState = InviteState(rawValue: state)
         else {
-            throw Abort.badRequest
+            throw Abort.custom(status: .badRequest, message: "Missing parameters.")
         }
         
         guard var invite = try EventInvite
@@ -116,7 +128,7 @@ final class EventsController {
             .filter("event_id", event_id)
             .first()
         else {
-            throw Abort.badRequest
+            throw Abort.custom(status: .badRequest, message: "Invalid invite parameters.")
         }
         
         invite.state = inviteState.rawValue
@@ -139,6 +151,11 @@ final class EventsController {
         else {
             throw Abort.badRequest
         }
+        
+//        guard owner_id == try request.auth.user().id?.int else {
+//            
+//        }
+        
         guard var event = try Event
             .query()
             .filter("id", Node(event_id))

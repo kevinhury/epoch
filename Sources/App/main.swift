@@ -12,6 +12,7 @@ import Fluent
 import Auth
 import EpochAuth
 import Meetapp
+import Routing
 
 let drop = Droplet()
 
@@ -45,12 +46,8 @@ drop.group("auth") { (group) in
 let meetapp = Meetapp.Module(droplet: drop)
 meetapp.addPreparations()
 
-drop.grouped(baseAuth, protect).group("events") { group in
-    meetapp.registerEventRoutes(routeGroup: group)
-}
-
-drop.grouped(baseAuth, protect).group("datepoll") { group in
-    meetapp.registerVoteRoutes(routeGroup: group)
-}
+let meetappGroup: RouteGroup = drop.grouped(baseAuth, protect)
+meetapp.registerEventRoutes(routeGroup: meetappGroup)
+meetapp.registerVoteRoutes(routeGroup: meetappGroup)
 
 drop.run()

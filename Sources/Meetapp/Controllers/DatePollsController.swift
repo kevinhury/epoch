@@ -8,10 +8,16 @@
 
 import Vapor
 import HTTP
+import Routing
 
 final class DatePollsController {
     
     public init() {}
+    
+    func registerRoutes(group: RouteGroup<Responder, Droplet>, path: String = "datepoll") {
+        let grouped = group.grouped(path)
+        grouped.post("vote", handler: vote)
+    }
     
     /**
      * @api {POST} /vote/

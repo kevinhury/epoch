@@ -29,9 +29,11 @@ final class Event: Model {
         self.ownerId = try node.extract("owner_id")
         self.name = try node.extract("name")
         self.description = try node.extract("description")
-        self.location = try node.extract("location")
         self.photoURL = try node.extract("photo_url")
         self.rsvpDeadline = try node.extract("rsvp_deadline")
+        
+        let loc: String = try node.extract("location")
+        self.location = try loc.validated(by: LatLng.self).value
     }
     
     func makeNode(context: Context) throws -> Node {
